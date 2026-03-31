@@ -1354,8 +1354,8 @@
     border-radius: 16px;
   }
   .chat-messages {
-    max-height: calc(100dvh - 220px);
-    max-height: calc(100vh - 220px);
+    max-height: calc(100dvh - 240px);
+    max-height: calc(100vh - 240px);
     padding: 12px;
     -webkit-overflow-scrolling: touch;
   }
@@ -1376,6 +1376,10 @@
   .chat-input {
     padding: 10px 14px;
     font-size: 0.85rem;
+  }
+  .chat-fab-wrap {
+    bottom: 12px;
+    right: 12px;
   }
 
   .cursor-glow { display: none; }
@@ -1414,16 +1418,16 @@
     width: 100vw;
     right: 0;
     left: 0;
-    bottom: 60px;
-    max-height: calc(100dvh - 70px);
-    max-height: calc(100vh - 70px);
+    bottom: 56px;
+    max-height: calc(100dvh - 64px);
+    max-height: calc(100vh - 64px);
     border-radius: 16px 16px 0 0;
   }
   .chat-messages {
-    max-height: calc(100dvh - 210px);
-    max-height: calc(100vh - 210px);
+    max-height: calc(100dvh - 220px);
+    max-height: calc(100vh - 220px);
   }
-  .chat-fab { width: 48px; height: 48px; }
+  .chat-fab { width: 44px; height: 44px; }
   .chat-fab-inner { font-size: 1rem; }
-  .chat-fab-wrap { bottom: 12px; right: 12px; }
+  .chat-fab-wrap { bottom: 8px; right: 8px; }
 }
