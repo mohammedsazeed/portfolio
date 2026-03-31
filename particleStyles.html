@@ -1,0 +1,276 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; }
+.wrap { font-family: var(--font-sans); padding: 12px 0; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tab { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: pointer; transition: all .2s; }
+.tab.active { background: #6c63ff; color: #fff; border-color: #6c63ff; }
+canvas { display: block; width: 100%; border-radius: var(--border-radius-lg); background: #0d0d18; cursor: crosshair; }
+.desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 8px; text-align: center; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(108,99,255,.15); color: #a78bfa; margin-left: 4px; }
+</style>
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" data-mode="repel">cursor repel</button>
+    <button class="tab" data-mode="connect">constellation</button>
+    <button class="tab" data-mode="orbit">orbit trails</button>
+    <button class="tab" data-mode="gravity">gravity well</button>
+    <button class="tab" data-mode="warp">warp speed</button>
+    <button class="tab" data-mode="firefly">fireflies</button>
+  </div>
+  <canvas id="c" height="300"></canvas>
+  <p class="desc" id="desc">Move cursor to repel · Click to burst <span class="tag">interactive</span></p>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const COLORS = ["#6c63ff","#e563ff","#63ffd9","#a78bfa","#f472b6","#818cf8","#34d399"];
+let w, h, particles = [], mode = 'repel', raf;
+const mouse = { x: -9999, y: -9999 };
+
+const DESCS = {
+  repel: 'Move cursor to repel · Click to burst',
+  connect: 'Particles draw lines when close · Move to distort web',
+  orbit: 'Each particle leaves a glowing trail behind it',
+  gravity: 'Click anywhere to place a gravity well · Move to drag',
+  warp: 'Warp-speed star field · Move cursor to steer',
+  firefly: 'Organic wandering glows · Warm lighting effect'
+};
+const TAGS = {
+  repel: 'interactive', connect: 'ambient', orbit: 'visual',
+  gravity: 'click to place', warp: 'ambient', firefly: 'ambient'
+};
+
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  w = rect.width; h = 300;
+  canvas.width = w * devicePixelRatio;
+  canvas.height = h * devicePixelRatio;
+  canvas.style.height = h + 'px';
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+}
+
+function makeParticle(mode) {
+  const angle = Math.random() * Math.PI * 2;
+  const speed = mode === 'warp' ? 0 : (Math.random() - .5) * .7;
+  const p = {
+    x: Math.random() * w, y: Math.random() * h,
+    vx: speed, vy: mode === 'warp' ? 0 : (Math.random() - .5) * .7,
+    bvx: speed, bvy: (Math.random() - .5) * .7,
+    size: mode === 'warp' ? .5 + Math.random() * 1.2 : 1.5 + Math.random() * 2.5,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    opacity: .4 + Math.random() * .5,
+    ps: .3 + Math.random() * 1.2, po: Math.random() * Math.PI * 2,
+    trail: [], angle: angle,
+    wanderAngle: Math.random() * Math.PI * 2,
+    brightness: Math.random(),
+    z: mode === 'warp' ? Math.random() * w : 1,
+    pz: 0
+  };
+  if (mode === 'warp') { p.x = w/2; p.y = h/2; p.z = Math.random() * w; }
+  return p;
+}
+
+function init() {
+  const count = mode === 'connect' ? 80 : mode === 'warp' ? 200 : mode === 'firefly' ? 60 : 130;
+  particles = Array.from({ length: count }, () => makeParticle(mode));
+  if (mode === 'gravity') gravityPoints = [];
+}
+
+let gravityPoints = [];
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+  if (mode === 'repel') {
+    particles.forEach(p => {
+      const dx = p.x-cx, dy = p.y-cy, d = Math.sqrt(dx*dx+dy*dy)||1;
+      if (d < 200) { const f=(1-d/200)*28; p.vx+=(dx/d)*f; p.vy+=(dy/d)*f; }
+    });
+  } else if (mode === 'gravity') {
+    gravityPoints.push({ x: cx, y: cy, t: Date.now() });
+    if (gravityPoints.length > 4) gravityPoints.shift();
+  }
+});
+
+window.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
+});
+
+function hex(c) {
+  return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)];
+}
+
+function drawRepel(t) {
+  ctx.clearRect(0,0,w,h);
+  for (const p of particles) {
+    const dx=p.x-mouse.x, dy=p.y-mouse.y, dist=Math.sqrt(dx*dx+dy*dy);
+    if (dist<120&&dist>0) { const f=(1-dist/120)*15; p.vx+=(dx/dist)*f; p.vy+=(dy/dist)*f; }
+    p.vx+=(p.bvx-p.vx)*.02; p.vy+=(p.bvy-p.vy)*.02;
+    p.vx*=.97; p.vy*=.97;
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<-20)p.x=w+20; if(p.x>w+20)p.x=-20;
+    if(p.y<-20)p.y=h+20; if(p.y>h+20)p.y=-20;
+    const pulse=Math.sin(t*.001*p.ps+p.po)*.2, alpha=Math.min(1,p.opacity+pulse);
+    const [r,g,b]=hex(p.color);
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size*3,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},${alpha*.15})`; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`; ctx.fill();
+  }
+}
+
+function drawConnect(t) {
+  ctx.clearRect(0,0,w,h);
+  const mx=mouse.x, my=mouse.y;
+  for (const p of particles) {
+    const dx=p.x-mx, dy=p.y-my, d=Math.sqrt(dx*dx+dy*dy);
+    if(d<100&&d>0){p.vx+=(dx/d)*.3; p.vy+=(dy/d)*.3;}
+    p.vx+=(p.bvx-p.vx)*.015; p.vy+=(p.bvy-p.vy)*.015;
+    p.vx*=.99; p.vy*=.99; p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0)p.x=w; if(p.x>w)p.x=0; if(p.y<0)p.y=h; if(p.y>h)p.y=0;
+  }
+  for (let i=0;i<particles.length;i++) {
+    for (let j=i+1;j<particles.length;j++) {
+      const a=particles[i], b=particles[j];
+      const dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90) {
+        const alpha=(1-d/90)*.5;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(168,139,250,${alpha})`; ctx.lineWidth=.6; ctx.stroke();
+      }
+    }
+    const p=particles[i], [r,g,b]=hex(p.color);
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},.9)`; ctx.fill();
+  }
+}
+
+function drawOrbit(t) {
+  ctx.fillStyle='rgba(13,13,24,.15)'; ctx.fillRect(0,0,w,h);
+  for (const p of particles) {
+    p.angle += .008 + p.ps*.003;
+    const r2 = 30 + p.opacity*40;
+    const cx2 = p.x + Math.cos(p.angle)*r2*.1;
+    const cy2 = p.y + Math.sin(p.angle)*r2*.1;
+    p.x += (cx2-p.x)*.05 + p.vx;
+    p.y += (cy2-p.y)*.05 + p.vy;
+    p.vx+=(p.bvx-p.vx)*.01; p.vy+=(p.bvy-p.vy)*.01;
+    p.vx*=.995; p.vy*=.995;
+    if(p.x<0)p.x=w; if(p.x>w)p.x=0; if(p.y<0)p.y=h; if(p.y>h)p.y=0;
+    p.trail.push({x:p.x, y:p.y});
+    if(p.trail.length>22) p.trail.shift();
+    if(p.trail.length>1){
+      for(let i=1;i<p.trail.length;i++){
+        const alpha=(i/p.trail.length)*.7;
+        const [r,g,b]=hex(p.color);
+        ctx.beginPath(); ctx.moveTo(p.trail[i-1].x,p.trail[i-1].y);
+        ctx.lineTo(p.trail[i].x,p.trail[i].y);
+        ctx.strokeStyle=`rgba(${r},${g},${b},${alpha})`;
+        ctx.lineWidth=p.size*(i/p.trail.length)*1.2; ctx.stroke();
+      }
+    }
+    const [r,g,b]=hex(p.color);
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size*1.2,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},1)`; ctx.fill();
+  }
+}
+
+function drawGravity(t) {
+  ctx.clearRect(0,0,w,h);
+  const now=Date.now();
+  gravityPoints = gravityPoints.filter(g=>now-g.t<8000);
+  const allG = [...gravityPoints, {x:mouse.x, y:mouse.y, soft:true}];
+  for (const p of particles) {
+    for(const g of allG){
+      const dx=g.x-p.x, dy=g.y-p.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+      if(d<200&&d>5){ const f=g.soft?0.3:0.8; p.vx+=(dx/d)*f*(200-d)/200; p.vy+=(dy/d)*f*(200-d)/200; }
+    }
+    p.vx*=.97; p.vy*=.97;
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<-20)p.x=w+20; if(p.x>w+20)p.x=-20;
+    if(p.y<-20)p.y=h+20; if(p.y>h+20)p.y=-20;
+    const pulse=Math.sin(t*.001*p.ps+p.po)*.2, alpha=Math.min(1,p.opacity+pulse);
+    const [r,g2,b]=hex(p.color);
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size*2.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g2},${b},${alpha*.18})`; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g2},${b},${alpha})`; ctx.fill();
+  }
+  for(const g of gravityPoints){
+    const age=(now-g.t)/8000, alpha=(1-age)*.5;
+    ctx.beginPath(); ctx.arc(g.x,g.y,6,0,Math.PI*2);
+    ctx.fillStyle=`rgba(99,255,217,${alpha})`; ctx.fill();
+    ctx.beginPath(); ctx.arc(g.x,g.y,20,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(99,255,217,${alpha*.3})`; ctx.lineWidth=1; ctx.stroke();
+  }
+}
+
+function drawWarp(t) {
+  ctx.fillStyle='rgba(13,13,24,.3)'; ctx.fillRect(0,0,w,h);
+  const cx=w/2, cy=h/2;
+  const speed = 4;
+  for(const p of particles){
+    p.pz=p.z;
+    p.z -= speed + (mouse.x/w)*4;
+    if(p.z<=0){ p.x=Math.random()*w; p.y=Math.random()*h; p.z=w; p.pz=w; }
+    const sx=((p.x-cx)/p.z)*w+cx, sy=((p.y-cy)/p.z)*h+cy;
+    const px=((p.x-cx)/p.pz)*w+cx, py=((p.y-cy)/p.pz)*h+cy;
+    const alpha=Math.min(1,(1-p.z/w)*1.2);
+    const lw=Math.max(.3,(1-p.z/w)*2.5);
+    ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(sx,sy);
+    ctx.strokeStyle=`rgba(168,139,250,${alpha})`; ctx.lineWidth=lw; ctx.stroke();
+  }
+}
+
+function drawFirefly(t) {
+  ctx.fillStyle='rgba(13,13,24,.12)'; ctx.fillRect(0,0,w,h);
+  for(const p of particles){
+    p.wanderAngle += (Math.random()-.5)*.15;
+    p.vx += Math.cos(p.wanderAngle)*.06;
+    p.vy += Math.sin(p.wanderAngle)*.06;
+    p.vx*=.96; p.vy*=.96;
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0)p.x=w; if(p.x>w)p.x=0; if(p.y<0)p.y=h; if(p.y>h)p.y=0;
+    p.brightness = Math.sin(t*.001*p.ps+p.po)*.5+.5;
+    const sz=p.size*(1+p.brightness*.8);
+    const warmColors=['#ffd97d','#ffb347','#ffe0a3','#fff1b8','#a8edaa'];
+    const [r,g,b]=hex(warmColors[Math.floor(p.ps*2)%warmColors.length]);
+    const alpha=.3+p.brightness*.6;
+    ctx.beginPath(); ctx.arc(p.x,p.y,sz*5,0,Math.PI*2);
+    const grad=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,sz*5);
+    grad.addColorStop(0,`rgba(${r},${g},${b},${alpha*.4})`);
+    grad.addColorStop(1,`rgba(${r},${g},${b},0)`);
+    ctx.fillStyle=grad; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x,p.y,sz,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`; ctx.fill();
+  }
+}
+
+const drawFns = { repel:drawRepel, connect:drawConnect, orbit:drawOrbit, gravity:drawGravity, warp:drawWarp, firefly:drawFirefly };
+
+function loop(t) {
+  drawFns[mode](t);
+  raf = requestAnimationFrame(loop);
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    cancelAnimationFrame(raf);
+    ctx.clearRect(0,0,w,h);
+    init();
+    document.getElementById('desc').innerHTML = DESCS[mode]+` <span class="tag">${TAGS[mode]}</span>`;
+    raf = requestAnimationFrame(loop);
+  });
+});
+
+resize();
+init();
+raf = requestAnimationFrame(loop);
+</script>
