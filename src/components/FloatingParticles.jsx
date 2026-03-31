@@ -13,9 +13,11 @@ export default function FloatingParticles({ count = 90 }) {
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const particlesRef = useRef([]);
   const animRef = useRef(null);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   const initParticles = useCallback((w, h) => {
-    return Array.from({ length: count }, () => {
+    const n = isMobile ? Math.min(count, 40) : count;
+    return Array.from({ length: n }, () => {
       const vx = (Math.random() - 0.5) * 0.7;
       const vy = (Math.random() - 0.5) * 0.7;
       return {
@@ -28,7 +30,7 @@ export default function FloatingParticles({ count = 90 }) {
         opacity: 0.5 + Math.random() * 0.4,
       };
     });
-  }, [count]);
+  }, [count, isMobile]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

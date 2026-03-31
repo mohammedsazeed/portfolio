@@ -94,6 +94,7 @@ export default function Navbar() {
                 {l.label}
               </a>
             ))}
+            <ThemeToggle />
           </motion.div>
         )}
       </AnimatePresence>
