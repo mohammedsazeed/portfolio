@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { FiArrowRight, FiMail } from "react-icons/fi";
+import { FiArrowRight, FiMail, FiDownload } from "react-icons/fi";
 import { profile } from "../data/profile";
 import MagneticButton from "./MagneticButton";
 import FloatingParticles from "./FloatingParticles";
@@ -134,6 +134,9 @@ export default function Hero() {
           </MagneticButton>
           <MagneticButton href={`mailto:${profile.email}`} className="btn btn-outline">
             <FiMail /> Say Hello
+          </MagneticButton>
+          <MagneticButton href="/Mohammed_Sazeed_Resume.pdf" className="btn btn-outline" download>
+            <FiDownload /> Resume
           </MagneticButton>
         </motion.div>
       </motion.div>
