@@ -297,8 +297,11 @@
   margin: 0 auto 28px;
   border: 2px solid var(--border);
   overflow: hidden;
-  background: var(--bg-card);
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%);
   position: relative;
+}
+[data-theme="light"] .hero-avatar {
+  background: linear-gradient(135deg, #e8e0f0 0%, #d4c4e8 50%, #e8e0f0 100%);
 }
 .hero-avatar::after {
   content: "";
