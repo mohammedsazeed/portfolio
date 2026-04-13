@@ -5,37 +5,37 @@ export const caseStudy = {
     "On the GTS AI Operations Platform, I set up Kiro IDE with MCP (Model Context Protocol) servers and custom hooks to give the AI agent direct access to the database, browser, and codebase — turning it into a true development partner.",
   sections: [
     {
-      icon: "🔌",
+      icon: "plug",
       title: "MCP Server Setup",
       description:
         "Installed Playwright MCP server so the AI can navigate the frontend, click through flows, take screenshots, fill forms, and debug UI issues autonomously — all through a persistent browser profile that survives restarts.",
     },
     {
-      icon: "🛡️",
+      icon: "shield",
       title: "DB Write Guard Hook",
       description:
         "Created a preToolUse hook that intercepts every shell command. If it detects SQL with INSERT, UPDATE, DELETE, or DDL statements, it forces the agent to ask for explicit permission. SELECT queries are auto-approved.",
     },
     {
-      icon: "📡",
+      icon: "radio",
       title: "Bastion SSH Tunnel",
       description:
         "Wrote a db-query.sh script that SSHs into the bastion host and runs psql against Aurora PostgreSQL in a private VPC. The AI agent uses this to query production data, validate schema changes, and debug issues.",
     },
     {
-      icon: "🔄",
+      icon: "refresh",
       title: "OpenAPI Sync Hook",
       description:
         "A fileEdited hook watches backend Lambda handlers and frontend API services. When API-related files change, it reminds the agent to check if openapi.yaml needs updating — keeping the spec as the single source of truth.",
     },
     {
-      icon: "📋",
+      icon: "file-text",
       title: "Schema Migration Hook",
       description:
         "When new SQL migration files are created, a hook triggers the agent to read the migration and automatically update the database-schema.json reference file — no manual sync needed.",
     },
     {
-      icon: "🧭",
+      icon: "compass",
       title: "Steering Files",
       description:
         "Project context and response rules are auto-included in every conversation via .kiro/steering/ files. The agent always knows the DB connection details, frontend routes, API spec location, and coding standards.",

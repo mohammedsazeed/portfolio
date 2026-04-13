@@ -1,19 +1,29 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { skills, certifications } from "../data/profile";
+import {
+  FiCode,
+  FiCloud,
+  FiDatabase,
+  FiBarChart2,
+  FiSettings,
+  FiShield,
+  FiCpu,
+  FiLayers,
+} from "react-icons/fi";
 
 const ease = [0.16, 1, 0.3, 1];
 
 const categories = ["Languages", "Cloud", "Databases", "Data", "DevOps", "Security", "AI/ML", "Architecture"];
 const categoryIcons = {
-  Languages: "💻",
-  Cloud: "☁️",
-  Databases: "🗄️",
-  Data: "📊",
-  DevOps: "⚙️",
-  Security: "🔒",
-  "AI/ML": "🤖",
-  Architecture: "🏗️",
+  Languages: <FiCode />,
+  Cloud: <FiCloud />,
+  Databases: <FiDatabase />,
+  Data: <FiBarChart2 />,
+  DevOps: <FiSettings />,
+  Security: <FiShield />,
+  "AI/ML": <FiCpu />,
+  Architecture: <FiLayers />,
 };
 
 export default function Skills() {

@@ -1,8 +1,26 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { caseStudy } from "../data/casestudy";
+import {
+  FiZap,
+  FiShield,
+  FiRadio,
+  FiRefreshCw,
+  FiFileText,
+  FiCompass,
+  FiArrowUpRight,
+} from "react-icons/fi";
 
 const ease = [0.16, 1, 0.3, 1];
+
+const iconMap = {
+  plug: FiZap,
+  shield: FiShield,
+  radio: FiRadio,
+  refresh: FiRefreshCw,
+  "file-text": FiFileText,
+  compass: FiCompass,
+};
 
 export default function CaseStudy() {
   const ref = useRef(null);
@@ -38,7 +56,10 @@ export default function CaseStudy() {
             transition={{ duration: 0.6, ease, delay: 0.3 + i * 0.1 }}
             whileHover={{ scale: 1.03, y: -4 }}
           >
-            <span className="cs-icon">{s.icon}</span>
+            {(() => {
+              const Icon = iconMap[s.icon];
+              return Icon ? <span className="cs-icon"><Icon /></span> : <span className="cs-icon">{s.icon}</span>;
+            })()}
             <h3 className="cs-card-title">{s.title}</h3>
             <p className="cs-card-desc">{s.description}</p>
           </motion.div>
@@ -51,7 +72,7 @@ export default function CaseStudy() {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7, ease, delay: 1 }}
       >
-        <span className="cs-outcome-icon">🚀</span>
+        <span className="cs-outcome-icon"><FiArrowUpRight /></span>
         <p>{caseStudy.outcome}</p>
       </motion.div>
     </section>

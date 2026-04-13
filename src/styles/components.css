@@ -895,8 +895,19 @@
 }
 .cs-icon {
   font-size: 1.6rem;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(108, 99, 255, 0.1);
+  color: var(--accent);
   margin-bottom: 14px;
+}
+.cs-icon svg {
+  width: 20px;
+  height: 20px;
 }
 .cs-card-title {
   font-family: "Space Grotesk", sans-serif;
@@ -919,7 +930,17 @@
   align-items: flex-start;
   gap: 14px;
 }
-.cs-outcome-icon { font-size: 1.4rem; flex-shrink: 0; }
+.cs-outcome-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+.cs-outcome-icon svg {
+  width: 22px;
+  height: 22px;
+}
 .cs-outcome p {
   font-size: 0.9rem;
   color: var(--text);
@@ -1430,4 +1451,102 @@
   .chat-fab { width: 44px; height: 44px; }
   .chat-fab-inner { font-size: 1rem; }
   .chat-fab-wrap { bottom: 8px; right: 8px; }
+}
+
+/* ===== UI UX PRO MAX ENHANCEMENTS ===== */
+
+/* 1. cursor-pointer on all interactive/hoverable elements */
+.stat-card,
+.skill-chip,
+.skill-category,
+.cert-card,
+.project-card,
+.cs-card,
+.testimonial-card,
+.exp-card,
+.contact-link,
+.testimonials-link,
+.chat-chip,
+.project-image-wrap {
+  cursor: pointer;
+}
+
+/* 2. Focus-visible states for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.stat-card:focus-visible,
+.skill-chip:focus-visible,
+.cert-card:focus-visible,
+.project-card:focus-visible,
+.cs-card:focus-visible,
+.testimonial-card:focus-visible,
+.contact-link:focus-visible,
+.chat-input:focus-visible,
+.nav-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 3. prefers-reduced-motion — disable animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cursor-glow,
+  .floating-particles,
+  .grain,
+  .blob {
+    display: none !important;
+  }
+}
+
+/* 4. Improved light mode contrast (4.5:1 minimum per UIPM checklist) */
+[data-theme="light"] .about-text,
+[data-theme="light"] .project-body p,
+[data-theme="light"] .cs-card-desc,
+[data-theme="light"] .testimonial-quote,
+[data-theme="light"] .exp-points li,
+[data-theme="light"] .chat-text,
+[data-theme="light"] .chat-msg-bot {
+  color: #374151;
+}
+
+[data-theme="light"] .stat-card .label,
+[data-theme="light"] .cert-period,
+[data-theme="light"] .exp-highlight-meta,
+[data-theme="light"] .testimonial-role,
+[data-theme="light"] .chat-bot-tagline {
+  color: #6B7280;
+}
+
+[data-theme="light"] .hero-badge {
+  color: #4B5563;
+}
+
+[data-theme="light"] .navbar nav.nav-desktop a {
+  color: #4B5563;
+}
+
+[data-theme="light"] .hero p {
+  color: #374151;
+}
+
+/* 5. SVG icon styling in skill categories (replacing emojis) */
+.skill-category-icon {
+  font-size: 1.2rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.skill-category-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
