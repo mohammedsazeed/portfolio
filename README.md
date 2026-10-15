@@ -1,16 +1,27 @@
-# React + Vite
+# Mohammed Sazeed — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Editorial portfolio for cloud architecture, data engineering and enterprise logistics integrations.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requires Node.js 22+.
 
-## React Compiler
+```bash
+npm ci
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Production checks
 
-## Expanding the ESLint configuration
+```bash
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Editorial approach
+
+The new site intentionally avoids decorative particle effects, faux metrics and a misleading rule-based "AI" chatbot. Work is presented as case notes with clear ownership and statuses.
+
+**Public-content policy:** do not publish confidential account IDs, endpoints, schemas, detailed internal diagrams, client documents, credentials, cost forecasts or operational schedules. The pipeline illustration is conceptual, not a production topology.
+
+**Before publishing:** Review any client-name usage and verify résumé content, credential dates, and employment descriptions against current records. The existing résumé PDF is not modified by this redesign.
