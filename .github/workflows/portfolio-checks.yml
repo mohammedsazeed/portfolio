@@ -15,7 +15,5 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      # Legacy components are no longer mounted by the redesigned app, but retain
-      # existing lint errors. Validate the new entry point until cleanup is scoped.
-      - run: npx eslint src/App.jsx
+      - run: npm run lint
       - run: npm run build
