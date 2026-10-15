@@ -258,7 +258,7 @@ function App() {
         <section id="expertise" className="expertise-section" aria-labelledby="expertise-title">
           <div className="layout-width">
             <div className="expertise-header"><span className="section-index">C / WHAT I BRING</span><h2 id="expertise-title">Depth over<br /><em>buzzwords.</em></h2></div>
-            <div className="expertise-list">{specialties.map(s => <article className="expertise-item" key={s.n}><span>{s.n}</span><div><h3>{s.heading}</h3><p>{s.description}</p><small>{s.items}</small></div><Arrow diagonal /></article>)}</div>
+            <div className="expertise-list">{specialties.map(s => <article className="expertise-item" key={s.n}><span>{s.n}</span><div><h3>{s.heading}</h3><p>{s.description}</p><small>{s.items}</small></div></article>)}</div>
           </div>
         </section>
 
